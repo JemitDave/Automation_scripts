@@ -1,35 +1,35 @@
 ##application:copy and pasting while reading journals,research papers, pdfs word etc
 ##pastes copied text as a .txt file
 ##saves screenshots of specific region as png
-import pyperclip as ppc,os,keyboard,pyautogui as pag
-from ctypes import windll
+
+from pynput.keyboard import Key, Listener
+import keyboard as kyb
+import pyperclip as ppc,os,pyautogui as pag
 from time import strftime,localtime
-import time
-os.chdir('C:\\Users\\usert\\Desktop\\copy_paster\\tester')
+from ctypes import windll
+
+# os.chdir('C:\\Users\\usert\\Desktop\\copy_paster\\tester')
 start_time=strftime('%d_%b_%Y_%H_%M_%S',localtime())
-text=open('endtest.txt','w')
+doc_name=pag.prompt('Enter the doc name')
+text=open(f"{doc_name}.txt",'w')
 text.write(f"Started at {start_time}\n")
 text.close()
-##empty array for screenshot
 xp=[]
 yp=[]
-
-
-##completely empties clipboard
+#completely empties clipboard
 def clear_clip():
     if windll.user32.OpenClipboard(None):
         windll.user32.EmptyClipboard()
         windll.user32.CloseClipboard()
 
-
-##appends text
+#appends text
 def writer(para):
-    text=open('endtest.txt','a')
+    text=open(f"{doc_name}.txt",'a')
     text.write(para)
     text.write("\n\n")
     text.close()
 
-##uses mouse location of top left and bottom right to take a screenshot
+#takes ss of a user defined region
 def take_ss(xp,yp):
     print(xp,yp)
     x1=min(xp)
@@ -37,46 +37,53 @@ def take_ss(xp,yp):
     x2=max(xp)
     y2=max(yp)
     box=(x1,y1,x2-x1,y2-y1)
+    ss=pag.screenshot(region=box)
     name=strftime('%d_%b_%Y_%H_%M_%S',localtime())
     try:
-        ss=pag.screenshot(region=box)
-        ss.save(f"{name}.png")
-    except:
-        pag.alert('unable to take ss')
+        ss.save(name+'.png')
+        print('ss taken')
+    except:pag.alert("unable to take ss")
     xp.clear()
     yp.clear()
 
+''' for debug     '''
+def on_press(key):
+    if key==Key.ctrl_r:
+        print('screenshot mode (ctrl_r is pressed)')
+        #enter screenshot Code
+        print('go to loc for ss region and press z')
+        for i in range(0,2):
+            kyb.wait('z')
+            xi,yi=pag.position()
+            print('position {} recorded'.format(i))
+            xp.append(xi)
+            yp.append(yi)
+        take_ss(xp,yp)
+
+    elif key==Key.ctrl_l:
+        #copy paste code
+        print('copy paste mode(ctrl_l is pressed)\n (text already pasted)')
+        para=ppc.waitForPaste()
+        # if len(para)==1:break                    #break from loop
+        writer(para)         #accepts any text with lenght greater than 1
+        # pag.alert('Copying Concluded') #graphical alert
+        clear_clip()                        #empties clipboard after every copy and paste
 
 
-##initial clearing of clipboard
+    else:pass
+    # print('{0} pressed'.format(
+    #     key))
+
+def on_release(key):
+    # print('{0} release'.format(
+    #     key))
+    if key == Key.esc:
+        # Stop listener
+        return False
+
 clear_clip()
-
-while True:
-    ##for screenshots
-    # while True:
-    try:
-        if keyboard.is_pressed('a'):
-            print('give loc for ss and press z')
-            for i in range(0,2):
-                keyboard.wait('z')
-                xi,yi=pag.position()
-                print('position {} recorded'.format(i))
-                xp.append(xi)
-                yp.append(yi)
-            take_ss(xp,yp)
-            break
-    except:break
-    ##for text
-    ##waits for non-empty string to be copied on clipboard
-    para=ppc.waitForPaste()
-    ##break from loop if single character selected i.e. ends script
-    if len(para)==1:break
-    writer(para)
-    # pag.alert('Copying Concluded') #graphical alert
-    ##empties clipboard after every copy and paste
-    clear_clip()
-
-
-clear_clip()
-text=open('endtest.txt','r+')
-print(text.read())
+# Collect events until released
+with Listener(
+        on_press=on_press,
+        on_release=on_release) as listener:
+    listener.join()
