@@ -3,16 +3,17 @@
 ##saves screenshots of specific region as png
 ##new file name and appending added in cp6
 from pynput.keyboard import Key, Listener
+from pynput import mouse
 import keyboard as kyb
 import pyperclip as ppc,os,pyautogui as pag
 from time import strftime,localtime
 from ctypes import windll
 
-os.chdir('C:\\Users\\usert\\PycharmProjects\\pytho\\copy_paster\\tester')
+os.chdir('C:\\Users\\usert\\Python\\pytho\\copy_paster\\tester')
 start_time=strftime('%d_%b_%Y_%H_%M_%S',localtime())
 doc_name=pag.prompt('Enter the txt file name')+'.txt'
 if os.path.isfile(doc_name):
-    ans=pag.prompt('''    File already Exists,to continue press cancel
+    ans=pag.prompt('''    File already Exists,to continue press ok
     else type new name ''')
     if ans!='':doc_name=ans+'.txt'
 text=open(f"{doc_name}",'a')
@@ -51,44 +52,47 @@ def take_ss(xp,yp):
     xp.clear()
     yp.clear()
 
-''' for debug     '''
+def on_click(x, y, button, pressed):
+    if pressed:
+        print(f"pressed at {x,y}")
+        xp.append(x)
+        yp.append(y)
+    else :
+        print(f"Released at {x,y}")
+        xp.append(x)
+        yp.append(y)
+        take_ss(xp,yp)
+        # m_listener.stop()
+        return False
+        
+
 def on_press(key):
     if key==Key.ctrl_r:
         print('screenshot mode (ctrl_r is pressed)')
-        #enter screenshot Code
-        print('go to loc for ss region and press z')
-        for i in range(0,2):
-            kyb.wait('z')
-            xi,yi=pag.position()
-            print('position {} recorded'.format(i))
-            xp.append(xi)
-            yp.append(yi)
-        take_ss(xp,yp)
+        print("starting mouse listner")
+        m_listener= mouse.Listener(on_click=on_click)
+        m_listener.start()
+
 
     elif key==Key.ctrl_l:
         #copy paste code
-        print('copy paste mode(ctrl_l is pressed)\n (text already pasted)')
+        print('copy paste mode(ctrl_l is pressed)\n (text pasted)')
         para=ppc.waitForPaste()
-        # if len(para)==1:break                    #break from loop
-        writer(para)         #accepts any text with lenght greater than 1
-        # pag.alert('Copying Concluded') #graphical alert
+        writer(para)         #accepts any text with lenght greater than 0
         clear_clip()                        #empties clipboard after every copy and paste
 
 
     else:pass
-    # print('{0} pressed'.format(
-    #     key))
 
 def on_release(key):
-    # print('{0} release'.format(
-    #     key))
     if key == Key.esc:
         # Stop listener
         return False
 
 clear_clip()
 # Collect events until released
+# m_listener= mouse.Listener(on_click=on_click)
 with Listener(
         on_press=on_press,
-        on_release=on_release) as listener:
-    listener.join()
+        on_release=on_release) as k_listener:
+    k_listener.join()
