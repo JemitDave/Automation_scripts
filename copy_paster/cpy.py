@@ -1,17 +1,21 @@
 ##application:copy and pasting while reading journals,research papers, pdfs word etc
 ##pastes copied text as a .txt file
 ##saves screenshots of specific region as png
-
+##new file name and appending added in cp6
 from pynput.keyboard import Key, Listener
 import keyboard as kyb
 import pyperclip as ppc,os,pyautogui as pag
 from time import strftime,localtime
 from ctypes import windll
 
-# os.chdir('C:\\Users\\usert\\Desktop\\copy_paster\\tester')
+os.chdir('C:\\Users\\usert\\PycharmProjects\\pytho\\copy_paster\\tester')
 start_time=strftime('%d_%b_%Y_%H_%M_%S',localtime())
-doc_name=pag.prompt('Enter the doc name')
-text=open(f"{doc_name}.txt",'w')
+doc_name=pag.prompt('Enter the txt file name')+'.txt'
+if os.path.isfile(doc_name):
+    ans=pag.prompt('''    File already Exists,to continue press cancel
+    else type new name ''')
+    if ans!='':doc_name=ans+'.txt'
+text=open(f"{doc_name}",'a')
 text.write(f"Started at {start_time}\n")
 text.close()
 xp=[]
@@ -24,13 +28,14 @@ def clear_clip():
 
 #appends text
 def writer(para):
-    text=open(f"{doc_name}.txt",'a')
+    text=open(f"{doc_name}",'a')
     text.write(para)
     text.write("\n\n")
     text.close()
 
 #takes ss of a user defined region
 def take_ss(xp,yp):
+    global doc_name
     print(xp,yp)
     x1=min(xp)
     y1=min(yp)
@@ -40,7 +45,7 @@ def take_ss(xp,yp):
     ss=pag.screenshot(region=box)
     name=strftime('%d_%b_%Y_%H_%M_%S',localtime())
     try:
-        ss.save(name+'.png')
+        ss.save(doc_name+' '+name+'.png')
         print('ss taken')
     except:pag.alert("unable to take ss")
     xp.clear()
