@@ -1,35 +1,82 @@
-#application:copy and pasting while reading journals,research papers, pdfs word etc
-#pastes copied text as a .txt file 
-
-import pyperclip as ppc,os
-# import pyautogui as pag
+##application:copy and pasting while reading journals,research papers, pdfs word etc
+##pastes copied text as a .txt file
+##saves screenshots of specific region as png
+import pyperclip as ppc,os,keyboard,pyautogui as pag
 from ctypes import windll
-os.chdir('C:\\Users\\usert\\Desktop')
-text=open('t5.txt','w')
-text.write("Start==>\n")
+from time import strftime,localtime
+import time
+os.chdir('C:\\Users\\usert\\Desktop\\copy_paster\\tester')
+start_time=strftime('%d_%b_%Y_%H_%M_%S',localtime())
+text=open('endtest.txt','w')
+text.write(f"Started at {start_time}\n")
 text.close()
+##empty array for screenshot
+xp=[]
+yp=[]
 
 
-def clear_clip():                           #completely empties clipboard
+##completely empties clipboard
+def clear_clip():
     if windll.user32.OpenClipboard(None):
         windll.user32.EmptyClipboard()
         windll.user32.CloseClipboard()
 
-def writer(para):                           #appends text
-    text=open('t5.txt','a')
+
+##appends text
+def writer(para):
+    text=open('endtest.txt','a')
     text.write(para)
     text.write("\n\n")
     text.close()
 
+##uses mouse location of top left and bottom right to take a screenshot
+def take_ss(xp,yp):
+    print(xp,yp)
+    x1=min(xp)
+    y1=min(yp)
+    x2=max(xp)
+    y2=max(yp)
+    box=(x1,y1,x2-x1,y2-y1)
+    name=strftime('%d_%b_%Y_%H_%M_%S',localtime())
+    try:
+        ss=pag.screenshot(region=box)
+        ss.save(f"{name}.png")
+    except:
+        pag.alert('unable to take ss')
+    xp.clear()
+    yp.clear()
 
-clear_clip()        #initial clearing of clipboard
-while True:
-    para=ppc.waitForPaste()
-    if len(para)==1:break                    #break from loop
-    writer(para)         #accepts any text with lenght greater than 1
-        # pag.alert('Copying Concluded') #graphical alert
 
-    clear_clip()                        #empties clipboard after every copy and paste
+
+##initial clearing of clipboard
 clear_clip()
-#text=open('t5.txt','r+')
-#print(text.read())
+
+while True:
+    ##for screenshots
+    # while True:
+    try:
+        if keyboard.is_pressed('a'):
+            print('give loc for ss and press z')
+            for i in range(0,2):
+                keyboard.wait('z')
+                xi,yi=pag.position()
+                print('position {} recorded'.format(i))
+                xp.append(xi)
+                yp.append(yi)
+            take_ss(xp,yp)
+            break
+    except:break
+    ##for text
+    ##waits for non-empty string to be copied on clipboard
+    para=ppc.waitForPaste()
+    ##break from loop if single character selected i.e. ends script
+    if len(para)==1:break
+    writer(para)
+    # pag.alert('Copying Concluded') #graphical alert
+    ##empties clipboard after every copy and paste
+    clear_clip()
+
+
+clear_clip()
+text=open('endtest.txt','r+')
+print(text.read())
