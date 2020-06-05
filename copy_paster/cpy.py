@@ -1,9 +1,12 @@
+#application:copy and pasting while reading journals,research papers, pdfs word etc
+#pastes copied text as a .txt file 
+
 import pyperclip as ppc,os
 # import pyautogui as pag
 from ctypes import windll
 os.chdir('C:\\Users\\usert\\Desktop')
-text=open('t4.txt','w')
-text.write("Start\n")
+text=open('t5.txt','w')
+text.write("Start==>\n")
 text.close()
 
 
@@ -13,20 +16,20 @@ def clear_clip():                           #completely empties clipboard
         windll.user32.CloseClipboard()
 
 def writer(para):                           #appends text
-    text=open('t4.txt','a')
+    text=open('t5.txt','a')
     text.write(para)
-    text.write("\n")
+    text.write("\n\n")
     text.close()
 
 
 clear_clip()        #initial clearing of clipboard
 while True:
-    para=ppc.paste()
-    if len(para)>1:writer(para)         #accepts any text with lenght greater than 1
-    if len(para)==1:                    #break from loop
+    para=ppc.waitForPaste()
+    if len(para)==1:break                    #break from loop
+    writer(para)         #accepts any text with lenght greater than 1
         # pag.alert('Copying Concluded') #graphical alert
-        break
-    clear_clip()                        #empties after every copy
 
-text=open('t4.txt','r+')
-print(text.read())
+    clear_clip()                        #empties clipboard after every copy and paste
+clear_clip()
+#text=open('t5.txt','r+')
+#print(text.read())
