@@ -1,7 +1,6 @@
 ##application:copy and pasting while reading journals,research papers, pdfs word etc
 ##pastes copied text as a .txt file
 ##saves screenshots of specific region as png
-##new file name and appending added in cp6
 from pynput.keyboard import Key, Listener
 from pynput import mouse
 import keyboard as kyb
