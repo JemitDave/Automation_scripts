@@ -9,7 +9,7 @@ import pyperclip as ppc,os,pyautogui as pag
 from time import strftime,localtime,sleep
 from ctypes import windll
 
-os.chdir("J:\Python\zdocs for copy paster")
+#os.chdir("J:\Python\zdocs for copy paster")
 start_time=strftime('%d_%b_%Y_%H_%M_%S',localtime())
 doc_name=pag.prompt('Enter the txt file name')+'.txt'
 if os.path.isfile(doc_name):

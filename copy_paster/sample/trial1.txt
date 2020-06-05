@@ -1,0 +1,12 @@
+Started at 05_Jun_2020_17_51_46
+Example of Thomas Algorithm and tridiagonal matrix solution
+(REF: Page 805, Numerical Methods, 6th Edition Textbook by Chapra)
+27.1 A steady-state heat balance for a copper wire can be represented as
+
+Started at 05_Jun_2020_17_54_04
+Started at 05_Jun_2020_17_56_28
+Obtain a tridiagonal matrix (suitable for numerical solution) for a wire of L=10-m length.
+Use N=6 knots (ix=6) and the running index from 1 to 6. There are 6 temperatures [T1, T2, T3, T4, T5, T6] and the x-vector [x1, x2, x3, x4, x5, x6]. This problem is developed with indices starting in one to match the indexes in the development of Thomas Algorithm.
+The step size and discretization:
+
+Started at 05_Jun_2020_17_59_00
